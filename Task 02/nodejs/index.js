@@ -1,6 +1,5 @@
 const { Pool } = require('pg');
 const argon2 = require('argon2');
-const express = require('express');
 
 class Options {
 
@@ -10,7 +9,7 @@ class Options {
             this.pool = new Pool({
                 user: 'root',
                 password: 'root',
-                host: '172.17.0.2',
+                host: 'postgres',
                 port: 5432,
                 database: 'baza'
             });
@@ -22,18 +21,13 @@ class Options {
         await this.connection();
         
         try {
-
-            await argon2.hash(password).then(async hash => {
-                await this.pool.query(`
-                    INSERT INTO users (email, hash)
-                    VALUES ($1, $2)`, [email, hash])
-                    .then(() => {
-                        return "OK";
-                    });
-            });
+            let hash = await argon2.hash(password);
+            await this.pool.query(`INSERT INTO users (email, hash) VALUES ($1, $2)`, [email, hash]);
+            return 200;
 
         } catch (error) {
             console.log(error);
+            return 409;
         }
     }
 
@@ -42,35 +36,48 @@ class Options {
         await this.connection();
 
         try {
-            let result = await this.pool.query(`
+            let queryresult = await this.pool.query(`
                 SELECT hash FROM users WHERE email = $1
             `, [email]);
-            let hash = result.rows[0]['hash'];
-
-            if (result.rows[0]) {
-                await argon2.verify(hash, password).then(result => {
-                    if (result) {
-                        return 1;
-                    } else {
-                        return 0;
-                    }
-                }).catch(error => {console.log(error);});
+            
+            if (queryresult.rows[0]) {
+                let argonresult = await argon2.verify(queryresult.rows[0]['hash'], password);
+                if (argonresult) {
+                    return 200;
+                } else {
+                    return 401;
+                }
             } else {
-                return -1;
+                return 404;
             }
         } catch (error) {
             console.log(error);
+            return 500;
         }
     }
 }
 
 
 
-// Rest API
+
+    // Rest API
+
+// Import
+const express = require('express');
+const session = require('express-session');
+
+// Define constants
 const options = new Options();
 const app = express();
 const port = 5555;
 
+// Set session secret
+app.use(session({
+    secret: "verysecretsecret",
+    saveUninitialized: false
+}));
+
+// Start listening
 app.post('/create_user', async (req, res) => {
     console.log("create post");
     res.send(await options.create_user(req.query.email, req.query.hash));

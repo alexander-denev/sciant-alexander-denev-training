@@ -1,0 +1,14 @@
+version: '2'
+services:
+  nodejs:
+    build:
+      context: ./nodejs
+      dockerfile: Dockerfile
+    ports:
+      - 5555:5555
+  postgres:
+    build:
+      context: ./postgres
+      dockerfile: Dockerfile
+    ports:
+      - 5432:5432
