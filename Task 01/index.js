@@ -1,58 +1,34 @@
+const argon2 = require('argon2');
 const { Pool } = require('pg');
+
 class Options {
 
-    async construct() {
+    async connection() {
 
-        this.pool = new Pool({
-            user: 'root',
-            password: 'root',
-            host: 'localhost',
-            port: 5432,
-            database: 'baza'
-        });
-
-        try {
-            await this.pool.query(`
-                CREATE TABLE IF NOT EXISTS users (
-                    id SERIAL PRIMARY KEY, 
-                    email VARCHAR(255) UNIQUE, 
-                    hash VARCHAR(255),
-                    session_data VARCHAR(255)
-                )
-                `);
-            await this.pool.query(`
-                CREATE TABLE IF NOT EXISTS tickers (
-                    id SERIAL PRIMARY KEY,
-                    symbol VARCHAR(255),
-                    name VARCHAR(255)
-                    )
-            `);
-            await this.pool.query(`
-                CREATE TABLE IF NOT EXISTS user_tickers (
-                    user_id INT REFERENCES users(id),
-                    ticker_id INT REFERENCES tickers(id)
-                )
-            `);
-            await this.pool.query(`
-                CREATE TABLE IF NOT EXISTS ticker_data (
-                    ticker_id INT REFERENCES tickers(id),
-                    at TIMESTAMP,
-                    price INT
-                )
-            `);
-        } catch (error) {
-            console.error(error);
+        if (!this.pool) {
+            this.pool = new Pool({
+                user: 'root',
+                password: 'root',
+                host: 'localhost',
+                port: 5432,
+                database: 'baza'
+            });
         }
     }
     
     async create_user(email, password) {
 
-        await this.construct();
+        await this.connection();
         
         try {
-            await this.pool.query(`
-                INSERT INTO users (email, hash)
-                VALUES ($1, $2)`, [email, password]);
+
+            await argon2.hash(password).then(async hash => {
+                await this.pool.query(`
+                    INSERT INTO users (email, hash)
+                    VALUES ($1, $2)`, [email, hash]);
+                console.log("User " + email + " created");
+            });
+
         } catch (error) {
             console.log(error);
         }
@@ -60,22 +36,25 @@ class Options {
 
     async login_user(email, password) {
 
-        await this.construct();
+        await this.connection();
 
         try {
-            await this.pool.query(`
+            let result = await this.pool.query(`
                 SELECT hash FROM users WHERE email = $1
-            `, [email], (error, result) => {
-                if (result.rows[0]) {
-                    if (result.rows[0]["hash"] === password) {
+            `, [email]);
+            let hash = result.rows[0]['hash'];
+
+            if (result.rows[0]) {
+                await argon2.verify(hash, password).then(result => {
+                    if (result) {
                         console.log("Password matches");
                     } else {
                         console.log("Password mismatches");
-                }
-                } else {
-                    console.log("User doesn't exist");
-                }
-            });
+                    }
+                }).catch(error => {console.log(error);});
+            } else {
+                console.log("User doesn't exist");
+            }
         } catch (error) {
             console.log(error);
         }

@@ -4,9 +4,7 @@ ENV POSTGRES_USER root
 ENV POSTGRES_DB baza
 EXPOSE 5432
 
-RUN apt-get update && apt-get install -y \
-  ca-certificates \
-  curl
+RUN apt-get update && apt-get install -y ca-certificates curl python3
 
 ARG NODE_VERSION=14.16.0
 ARG NODE_PACKAGE=node-v$NODE_VERSION-linux-x64
@@ -19,6 +17,11 @@ RUN curl https://nodejs.org/dist/v$NODE_VERSION/$NODE_PACKAGE.tar.gz | tar -xzC 
 
 WORKDIR /app
 
-COPY package*.json ./
+RUN npm i pg
+RUN npm i --unsafe-perm argon2
 
-COPY . .
+COPY package*.json ./ 
+
+COPY index.js ./
+
+COPY db.sql /docker-entrypoint-initdb.d/
