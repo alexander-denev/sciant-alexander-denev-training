@@ -1,62 +1,17 @@
+try {require('dotenv').config();} catch {}
+
+// Create postgres connection
 const { Pool } = require('pg');
-const argon2 = require('argon2');
-
-class Options {
-
-    async connection() {
-
-        if (!this.pool) {
-            this.pool = new Pool({
-                user: 'root',
-                password: 'root',
-                host: 'postgres',
-                port: 5432,
-                database: 'baza'
-            });
-        }
-    }
-    
-    async create_user(email, password) {
-
-        await this.connection();
-        
-        try {
-            let hash = await argon2.hash(password);
-            await this.pool.query(`INSERT INTO users (email, hash) VALUES ($1, $2)`, [email, hash]);
-            return 200;
-
-        } catch (error) {
-            console.log(error);
-            return 409;
-        }
-    }
-
-    async login_user(email, password) {
-
-        await this.connection();
-
-        try {
-            let queryresult = await this.pool.query(`
-                SELECT hash FROM users WHERE email = $1
-            `, [email]);
-            
-            if (queryresult.rows[0]) {
-                let argonresult = await argon2.verify(queryresult.rows[0]['hash'], password);
-                if (argonresult) {
-                    return 200;
-                } else {
-                    return 401;
-                }
-            } else {
-                return 404;
-            }
-        } catch (error) {
-            console.log(error);
-            return 500;
-        }
-    }
-}
-
+const env = process.env;
+const pool = new Pool({
+    user: env.POSTGRES_USER,
+    password: env.POSTGRES_PASSWORD,
+    host: env.POSTGRES_HOST,
+    port: env.POSTGRES_PORT,
+    database: env.POSTGRES_DB
+});
+const MPC = require("./mypgcontroller");
+const pg = new MPC(pool);
 
 
 
@@ -64,30 +19,60 @@ class Options {
 
 // Import
 const express = require('express');
-const session = require('express-session');
+const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
 
 // Define constants
-const options = new Options();
 const app = express();
 const port = 5555;
 
-// Set session secret
-app.use(session({
-    secret: "verysecretsecret",
-    saveUninitialized: false
-}));
+// Session config
+const secret = crypto.randomBytes(32).toString('hex');
+const refresh_secret = crypto.randomBytes(32).toString('hex');
+
+// Middleware
+app.use(express.json());
+
+
 
 // Start listening
 app.post('/create_user', async (req, res) => {
     console.log("create post");
-    res.send(await options.create_user(req.query.email, req.query.hash));
+
+    let { email, hash } = req.body;
+    res.status(await pg.create_user(email, hash));
+    res.send(); 
 });
 
 app.post('/login_user', async (req, res) => {
     console.log("login post");
-    res.send(await options.login_user(req.query.email, req.query.hash));
+
+    let { email, hash } = req.body;
+    let statusCode = await pg.login_user(email, hash);
+    res.status(statusCode);
+
+    //JWT
+    if (statusCode=200) {
+
+        const user = { username: email };
+        
+        const accesssToken = jwt.sign(user, secret);
+        res.json({ accesssToken: accesssToken });
+
+    } else {
+        res.send();
+    }
+});
+
+app.get('/test', (req, res) => {
+    if (req.session.isAuth) {
+        res.send("Logged in!");
+    } else {
+        res.send("Not logged in!");
+    }
+    
 });
 
 app.listen(port, () => {
-    console.log('listening on port ' + port);
+    console.log('Node listening on port ' + port);
 });

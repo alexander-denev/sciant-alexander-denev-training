@@ -2,8 +2,10 @@ CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY, 
     email VARCHAR(255) UNIQUE, 
     hash VARCHAR(255),
-    session_data VARCHAR(255)
+    session_data JSON
 );
+INSERT INTO users (email, hash) VALUES ('admin', '$argon2id$v=19$m=65536,t=3,p=4$8Q+v1SN2EJGKuI8+pLp9gw$nPPmKx+mYlR9ljP6TPq+C1/TBTGOIOg8yqhWk4LwhnM');
+
 CREATE TABLE IF NOT EXISTS tickers (
 id SERIAL PRIMARY KEY,
 symbol VARCHAR(255),
