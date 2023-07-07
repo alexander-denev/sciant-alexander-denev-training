@@ -19,58 +19,51 @@ const pg = new MPC(pool);
 
 // Import
 const express = require('express');
-const crypto = require('crypto');
-const jwt = require('jsonwebtoken');
+const Myjwt = require('./myjwt');
+const cors = require('cors');
 
 // Define constants
 const app = express();
 const port = 5555;
 
 // Session config
-const secret = crypto.randomBytes(32).toString('hex');
-const refresh_secret = crypto.randomBytes(32).toString('hex');
+const myjwt = new Myjwt();
 
 // Middleware
 app.use(express.json());
-
-
+app.use(cors({
+    origin: "*"
+}))
 
 // Start listening
-app.post('/create_user', async (req, res) => {
-    console.log("create post");
+app.post('/create_user', myjwt.authenticateToken.bind(myjwt), async (req, res) => {
 
     let { email, hash } = req.body;
-    res.status(await pg.create_user(email, hash));
-    res.send(); 
+    res.sendStatus(await pg.create_user(email, hash));
+
 });
 
 app.post('/login_user', async (req, res) => {
-    console.log("login post");
 
+    // Check credentials
     let { email, hash } = req.body;
     let statusCode = await pg.login_user(email, hash);
-    res.status(statusCode);
 
-    //JWT
-    if (statusCode=200) {
+    // Give token if credentials match
+    if (statusCode === 200) {
 
-        const user = { username: email };
-        
-        const accesssToken = jwt.sign(user, secret);
-        res.json({ accesssToken: accesssToken });
+        res.status(statusCode);
+        myjwt.sendToken(res, {
+            username: email
+        });
 
     } else {
-        res.send();
+        res.sendStatus(statusCode);
     }
 });
 
-app.get('/test', (req, res) => {
-    if (req.session.isAuth) {
-        res.send("Logged in!");
-    } else {
-        res.send("Not logged in!");
-    }
-    
+app.get('/test', myjwt.authenticateToken.bind(myjwt), (req, res) => {
+    res.send("Authenticated!");
 });
 
 app.listen(port, () => {
