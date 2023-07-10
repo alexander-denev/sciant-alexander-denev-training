@@ -1,15 +1,8 @@
 import React from 'react';
-import LoginForm from './components/LoginForm/LoginForm';
-import PageTitle from './components/PageTitle';
+import LoginHandler from './components/LoginHandler/LoginHandler';
 
 function App() {
-
-  return (
-      <>
-        <PageTitle/>
-        <LoginForm/>
-      </>
-  );
+    return <LoginHandler />;
 }
 
 export default App;
