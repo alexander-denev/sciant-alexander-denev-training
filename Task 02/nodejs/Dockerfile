@@ -3,10 +3,8 @@ FROM node:latest
 WORKDIR /app
 COPY *.js ./
 
-RUN npm i pg
-RUN npm i argon2
-RUN npm i express
-RUN npm i jsonwebtoken
-RUN npm i cors
+COPY package*.json ./
+RUN npm install
+# COPY node_modules ./node_modules
 
 CMD ["node", "/app/index.js"]
