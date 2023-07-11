@@ -8,7 +8,7 @@ INSERT INTO users (email, hash, userdata) VALUES ('admin', '$argon2id$v=19$m=655
 
 CREATE TABLE IF NOT EXISTS tickers (
 id SERIAL PRIMARY KEY,
-symbol VARCHAR(255),
+symbol VARCHAR(255) UNIQUE,
 name VARCHAR(255)
 );
 
