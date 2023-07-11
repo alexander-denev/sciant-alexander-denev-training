@@ -1,5 +1,6 @@
 version: '2'
 services:
+
   postgres:
     build:
       context: ./postgres
@@ -7,7 +8,7 @@ services:
     ports:
       - 5432:5432
     env_file:
-      - .env
+    - .env
 
   nodejs:
     build:
@@ -18,11 +19,11 @@ services:
     env_file:
       - .env
 
-  react:
-    build:
-      context: ./reactt
-      dockerfile: Dockerfile
-    ports:
-      - 3000:3000
-    env_file:
-      - .env
+react:
+  build:
+    context: ./reactt
+    dockerfile: Dockerfile
+  ports:
+    - 3000:3000
+  env_file:
+    - .env
