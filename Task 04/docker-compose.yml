@@ -10,20 +10,20 @@ services:
     env_file:
     - .env
 
-  nodejs:
-    build:
-      context: ./nodejs
-      dockerfile: Dockerfile
-    ports:
-      - 5555:5555
-    env_file:
-      - .env
+#   nodejs:
+#     build:
+#       context: ./nodejs
+#       dockerfile: Dockerfile
+#     ports:
+#       - 5555:5555
+#     env_file:
+#       - .env
 
-react:
-  build:
-    context: ./reactt
-    dockerfile: Dockerfile
-  ports:
-    - 3000:3000
-  env_file:
-    - .env
+# react:
+#   build:
+#     context: ./reactt
+#     dockerfile: Dockerfile
+#   ports:
+#     - 3000:3000
+#   env_file:
+#     - .env

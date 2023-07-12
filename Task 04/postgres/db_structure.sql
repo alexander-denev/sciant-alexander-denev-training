@@ -8,7 +8,7 @@ INSERT INTO users (email, hash, userdata) VALUES ('admin', '$argon2id$v=19$m=655
 
 CREATE TABLE IF NOT EXISTS tickers (
 id SERIAL PRIMARY KEY,
-symbol VARCHAR(255) UNIQUE,
+symbol VARCHAR(255),
 name VARCHAR(255)
 );
 
@@ -19,6 +19,6 @@ CREATE TABLE IF NOT EXISTS user_tickers (
 
 CREATE TABLE IF NOT EXISTS ticker_data (
     ticker_id INT REFERENCES tickers(id),
-    at TIMESTAMP,
+    at BIGINT,
     price INT
 );
