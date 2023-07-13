@@ -20,5 +20,5 @@ CREATE TABLE IF NOT EXISTS user_tickers (
 CREATE TABLE IF NOT EXISTS ticker_data (
     ticker_id INT REFERENCES tickers(id),
     at BIGINT,
-    price INT
+    price NUMERIC
 );
