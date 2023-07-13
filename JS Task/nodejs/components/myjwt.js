@@ -18,7 +18,7 @@ class Main {
 
     jwt.verify(token, this.secret, (err, object) => {
       if (err) return res.sendStatus(403);
-      req.object = object;
+      req.authObject = object;
       next();
     });
   }

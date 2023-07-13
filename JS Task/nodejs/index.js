@@ -13,27 +13,22 @@ const pool = new Pool({
   database: env.POSTGRES_DB || 'baza',
 });
 
-// Rest API
-
-// Import
-const express = require('express');
-const cors = require('cors');
-
 // Define constants
+const express = require('express');
 const app = express();
-const port = 5555;
+const port = env.RESTAPI_PORT || 5555;
 
 // Import component dependencies
-const myPostgres = new (require('./components/mypgcontroller'))(pool);
 const myJwt = new (require('./components/myjwt'))();
 
 app.use((req, res, next) => {
-  req.myPostgres = myPostgres;
   req.myJwt = myJwt;
+  req.pool = pool;
   next();
 });
 
 // Middleware
+const cors = require('cors');
 app.use(cors({ origin: '*' }));
 app.use(express.json());
 
