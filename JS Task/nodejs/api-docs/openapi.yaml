@@ -45,6 +45,51 @@ security:
   - bearerAuth: []
 
 paths:
+  /login:
+    post:
+      description: Check credentials and return a JWT.
+      tags:
+        - login
+
+      security: []
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+            examples:
+              default:
+                value:
+                  email: james.bond@example.com
+                  password: bondsVerySecretPass
+
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+              examples:
+                default:
+                  value:
+                    accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEyMywibmFtZSI6IkpvaG4gRG9lIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNTI1MDQ0MDI4LCJleHAiOjE1MjUwNDc2Mjh9.tPOjUUB9LfaZ_1nRu1JXzQpWeYHPdqHM582IC1VLVnk
+
+        '401':
+          description: Incorrect credentials.
+        '500':
+          $ref: '#/components/responses/500'
+
   /user:
     post:
       description: Create a user.
@@ -78,7 +123,7 @@ paths:
                   userData:
                     name: James Bond
                     age: confidential
-                    address:  confidential
+                    address: confidential
 
       responses:
         '401':
@@ -95,13 +140,29 @@ paths:
       tags:
         - user
 
-      security: []
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          examples:
+            default:
+              value: 20
+          description: Limit the array size returned. Default is 100.
+        - in: query
+          name: offset
+          schema:
+            type: integer
+          examples:
+            default:
+              value: 5
+          description: When to start counting towards the limit and returning values.
 
       responses:
         '500':
           $ref: '#/components/responses/500'
         '401':
-          $ref: "#/components/responses/unauth"
+          $ref: '#/components/responses/unauth'
         '200':
           description: Success.
           content:
@@ -118,7 +179,7 @@ paths:
                     userData:
                       name: James Bond
                       age: confidential
-                      address:  confidential
+                      address: confidential
 
   /ticker:
     post:
@@ -143,6 +204,12 @@ paths:
                   type: string
                 price:
                   type: number
+            examples:
+              default:
+                value:
+                  symbol: GOOG
+                  name: Google Inc.
+                  price: 117.21
 
       responses:
         '401':
@@ -157,12 +224,30 @@ paths:
       tags:
         - ticker
 
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          examples:
+            default:
+              value: 20
+          description: Limit the array size returned. Default is 100.
+        - in: query
+          name: offset
+          schema:
+            type: integer
+          examples:
+            default:
+              value: 5
+          description: When to start counting towards the limit and returning values.
+
       responses:
         '401':
           $ref: '#/components/responses/unauth'
 
         '500':
-          $ref: "#/components/responses/500"
+          $ref: '#/components/responses/500'
 
         '200':
           description: Success.
@@ -200,10 +285,9 @@ paths:
                         price: 12.86
 
   /ticker/{tickerId}:
-
     patch:
-      description: Update a user's ticker. 
-      tags: 
+      description: Update a user's ticker.
+      tags:
         - ticker
 
       parameters:
@@ -214,23 +298,23 @@ paths:
           schema:
             type: integer
             format: int64
+          examples:
+            default:
+              value: 1
 
       responses:
         '200':
           $ref: '#/components/responses/200'
         '500':
-          $ref: "#/components/responses/500"
+          $ref: '#/components/responses/500'
         '403':
           $ref: '#/components/responses/403'
         '401':
           $ref: '#/components/responses/unauth'
 
-
-
-
     delete:
       description: Delete a user's ticker.
-      tags: 
+      tags:
         - ticker
 
       parameters:
@@ -241,12 +325,15 @@ paths:
           schema:
             type: integer
             format: int64
+          examples:
+            default:
+              value: 1
 
       responses:
         '200':
           $ref: '#/components/responses/200'
         '500':
-          $ref: "#/components/responses/500"
+          $ref: '#/components/responses/500'
         '403':
           $ref: '#/components/responses/403'
         '401':
