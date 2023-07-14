@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-router.use('/login', require('./routes/login'));
+router.use('/login', require('./login'));
 
 router.use(
   '/user',
@@ -10,7 +10,7 @@ router.use(
     req.myJwt.authenticateToken(req, res, next);
   },
 
-  require('./routes/user')
+  require('./user')
 );
 
 router.use(
@@ -20,7 +20,7 @@ router.use(
     req.myJwt.authenticateToken(req, res, next);
   },
 
-  require('./routes/ticker')
+  require('./ticker')
 );
 
 module.exports = router;

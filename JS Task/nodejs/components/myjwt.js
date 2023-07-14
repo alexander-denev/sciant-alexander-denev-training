@@ -14,10 +14,10 @@ class Main {
     const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.split(' ')[1];
 
-    if (!token) return res.sendStatus(401);
+    if (!token) return res.sendStatus(401); // If token is missing
 
     jwt.verify(token, this.secret, (err, object) => {
-      if (err) return res.sendStatus(403);
+      if (err) return res.sendStatus(401); // If token is invalid
       req.authObject = object;
       next();
     });

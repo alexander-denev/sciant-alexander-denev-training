@@ -35,6 +35,9 @@ app.use(express.json());
 // Routes
 app.use(require('./components/routes'));
 
+// Api documentation using swagger
+app.use('/api-docs', require('./api-docs'));
+
 app.listen(port, () => {
   console.log('Node listening on port ' + port);
 });

@@ -1,0 +1,253 @@
+openapi: 3.0.0
+info:
+  title: My Rest API
+  description: My description
+  version: '1.0'
+servers:
+  - url: http://127.0.0.1:5555
+    description: The Local Server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    'unauth':
+      description: Unauthorized, meaning Bearer Token missing or invalid.
+
+    '200':
+      description: Success.
+
+    '500':
+      description: Internal server error.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+          examples:
+            default:
+              value:
+                error: Couldn't access database.
+
+    '409user':
+      description: Conflict. User already exists.
+
+    '403':
+      description: Forbidden. Content, trying to be accessed, does not belong to this user.
+
+security:
+  - bearerAuth: []
+
+paths:
+  /user:
+    post:
+      description: Create a user.
+      tags:
+        - user
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+                - userData
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+                userData:
+                  type: object
+                  description: Object can contain any number of any type of properties.
+
+            examples:
+              default:
+                value:
+                  email: james.bond@example.com
+                  password: bondsVerySecretPass
+                  userData:
+                    name: James Bond
+                    age: confidential
+                    address:  confidential
+
+      responses:
+        '401':
+          $ref: '#/components/responses/unauth'
+        '200':
+          $ref: '#/components/responses/200'
+        '409':
+          $ref: '#/components/responses/409user'
+        '500':
+          $ref: '#/components/responses/500'
+
+    get:
+      description: Fetch the userData object.
+      tags:
+        - user
+
+      security: []
+
+      responses:
+        '500':
+          $ref: '#/components/responses/500'
+        '401':
+          $ref: "#/components/responses/unauth"
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userData:
+                    type: object
+                    description: The object contains any property, put into it at user creation.
+              examples:
+                default:
+                  value:
+                    userData:
+                      name: James Bond
+                      age: confidential
+                      address:  confidential
+
+  /ticker:
+    post:
+      description: Create a new ticker, belonging to the user.
+      tags:
+        - ticker
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - symbol
+                - name
+                - price
+              properties:
+                symbol:
+                  type: string
+                name:
+                  type: string
+                price:
+                  type: number
+
+      responses:
+        '401':
+          $ref: '#/components/responses/unauth'
+        '200':
+          $ref: '#/components/responses/200'
+        '500':
+          $ref: '#/components/responses/500'
+
+    get:
+      description: List user's tickers.
+      tags:
+        - ticker
+
+      responses:
+        '401':
+          $ref: '#/components/responses/unauth'
+
+        '500':
+          $ref: "#/components/responses/500"
+
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: array
+                    description: An array of the user's tickers.
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        symbol:
+                          type: string
+                        name:
+                          type: string
+                        price:
+                          type: number
+
+              examples:
+                default:
+                  value:
+                    result:
+                      - id: 1
+                        symbol: GOOG
+                        name: Google Inc.
+                        price: 117.21
+                      - id: 2
+                        symbol: APPL
+                        name: Apple Inc.
+                        price: 12.86
+
+  /ticker/{tickerId}:
+
+    patch:
+      description: Update a user's ticker. 
+      tags: 
+        - ticker
+
+      parameters:
+        - name: tickerId
+          in: path
+          description: The id of a ticker that the user owns.
+          required: true
+          schema:
+            type: integer
+            format: int64
+
+      responses:
+        '200':
+          $ref: '#/components/responses/200'
+        '500':
+          $ref: "#/components/responses/500"
+        '403':
+          $ref: '#/components/responses/403'
+        '401':
+          $ref: '#/components/responses/unauth'
+
+
+
+
+    delete:
+      description: Delete a user's ticker.
+      tags: 
+        - ticker
+
+      parameters:
+        - name: tickerId
+          in: path
+          description: The id of a ticker that the user owns.
+          required: true
+          schema:
+            type: integer
+            format: int64
+
+      responses:
+        '200':
+          $ref: '#/components/responses/200'
+        '500':
+          $ref: "#/components/responses/500"
+        '403':
+          $ref: '#/components/responses/403'
+        '401':
+          $ref: '#/components/responses/unauth'

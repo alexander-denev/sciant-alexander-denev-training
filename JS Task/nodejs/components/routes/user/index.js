@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-router.get('/:id', async (req, res) => {});
+router.use(require('./create'));
+router.use(require('./fetchUserdata'));
 
 module.exports = router;
