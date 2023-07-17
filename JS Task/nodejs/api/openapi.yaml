@@ -16,7 +16,7 @@ components:
 
   responses:
     'unauth':
-      description: Unauthorized, meaning Bearer Token missing or invalid.
+      description: Unauthorized, meaning Bearer Token is invalid.
 
     '200':
       description: Success.
@@ -83,7 +83,7 @@ paths:
               examples:
                 default:
                   value:
-                    accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEyMywibmFtZSI6IkpvaG4gRG9lIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNTI1MDQ0MDI4LCJleHAiOjE1MjUwNDc2Mjh9.tPOjUUB9LfaZ_1nRu1JXzQpWeYHPdqHM582IC1VLVnk
+                    accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY4OTU3ODIwN30.Q28AzLRnYrbqa_WDiJpMBS26TRTSVm30OlhzuiFXBxk
 
         '401':
           description: Incorrect credentials.
@@ -139,24 +139,6 @@ paths:
       description: Fetch the userData object.
       tags:
         - user
-
-      parameters:
-        - in: query
-          name: limit
-          schema:
-            type: integer
-          examples:
-            default:
-              value: 20
-          description: Limit the array size returned. Default is 100.
-        - in: query
-          name: offset
-          schema:
-            type: integer
-          examples:
-            default:
-              value: 5
-          description: When to start counting towards the limit and returning values.
 
       responses:
         '500':
@@ -231,7 +213,7 @@ paths:
             type: integer
           examples:
             default:
-              value: 20
+              value: 100
           description: Limit the array size returned. Default is 100.
         - in: query
           name: offset
@@ -239,7 +221,7 @@ paths:
             type: integer
           examples:
             default:
-              value: 5
+              value: 0
           description: When to start counting towards the limit and returning values.
 
       responses:

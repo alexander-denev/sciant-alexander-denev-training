@@ -28,15 +28,16 @@ app.use((req, res, next) => {
 });
 
 // Middleware
+app.use(express.json());
+app.use(express.text());
 const cors = require('cors');
 app.use(cors({ origin: '*' }));
-app.use(express.json());
+
+// Api documentation and validator
+app.use(require('./api'));
 
 // Routes
 app.use(require('./components/routes'));
-
-// Api documentation using swagger
-app.use('/api-docs', require('./api-docs'));
 
 app.listen(port, () => {
   console.log('Node listening on port ' + port);
