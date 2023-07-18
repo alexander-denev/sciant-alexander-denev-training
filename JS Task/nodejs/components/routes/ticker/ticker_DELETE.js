@@ -13,7 +13,7 @@ router.delete('/:id', async (req, res) => {
 
     if (queryResult.rows.length) {
       // User with userId owns the ticker
-      await this.pool.query('DELETE FROM user_tickers WHERE user_id = $1 AND ticker_id = $2', [userId, tickerId]);
+      await req.pool.query('DELETE FROM user_tickers WHERE user_id = $1 AND ticker_id = $2', [userId, tickerId]);
 
       res.sendStatus(200);
     } else {
@@ -21,7 +21,7 @@ router.delete('/:id', async (req, res) => {
       res.sendStatus(403);
     }
   } catch (error) {
-    res.status(500).json({ error: error });
+    res.status(500).json({ error: error.stack });
   }
 });
 

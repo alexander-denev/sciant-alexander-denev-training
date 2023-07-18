@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 export default function LoginForm({ setAccessToken }) {
-  const [loginError, setLoginError] = useState('');
+  const [invalidCredentials, setInvalidCredentials] = useState(() => false);
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState(() => ''); 
+  const [password, setPassword] = useState(() => ''); 
+
+  useEffect(() => {
+    setInvalidCredentials(false);
+  }, [email, password]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -13,33 +17,30 @@ export default function LoginForm({ setAccessToken }) {
       const loginResponse = await fetch(process.env.REACT_APP_RESTAPI_HOST + '/login', {
         method: 'POST',
         headers: {
+          accept: 'application/json',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email,
-          password,
+          email: email,
+          password: password,
         }),
       });
 
       const loginSatusCode = loginResponse.status;
 
       if (loginSatusCode === 200) {
-        // Server responded with OK
         const loginResponseBody = await loginResponse.json();
         const accessToken = loginResponseBody.accessToken;
 
         setAccessToken(accessToken);
+      } else if (loginSatusCode === 401) {
+        setInvalidCredentials(true);
       } else {
-        // Server responded with an error code
-        if (loginSatusCode === 500) {
-          const parsedError = (await loginResponse.json()).error;
-          setLoginError({ status: loginResponse.status, error: parsedError });
-        } else {
-          setLoginError({ status: loginResponse.status });
-        }
+        const parsedError = (await loginResponse.json()).error;
+        console.log({ statusCode: loginResponse.status, error: parsedError });
       }
     } catch (error) {
-      setLoginError({ error });
+      console.log(error);
     }
   };
 
@@ -60,9 +61,7 @@ export default function LoginForm({ setAccessToken }) {
       <input type="submit" value="Login" />
       <br />
 
-      {loginError ? (
-        <>Error: {(loginError.status ? loginError.status : null) + (loginError.error ? ': ' + loginError.error : null)}</>
-      ) : null}
+      {invalidCredentials ? <div>Invalid Credentials!</div> : null}
     </form>
   );
 }

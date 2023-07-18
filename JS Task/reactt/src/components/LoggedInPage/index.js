@@ -1,29 +1,52 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import LoginTitle from './LoginTitle';
-// import Tickers from './Tickers';
+import Tickers from './Tickers';
 
-export default async function LoggedInPage({ accessToken }) {
+export default function LoggedInPage({ accessToken, setAccessToken }) {
+  const [userData, setUserData] = useState();
 
-  const getResponse = await fetch(process.env.REACT_APP_RESTAPI_HOST + '/user', {
-    method: 'GET',
-    headers: {
-      accept: 'application/json',
-      'Content-Type': 'application/json',
-      Authorization: 'Bearer ' + accessToken,
-    },
-  });
+  useEffect(() => {
+    (async () => {
+      const getResponse = await fetch(process.env.REACT_APP_RESTAPI_HOST + '/user', {
+        method: 'GET',
+        headers: {
+          accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + accessToken,
+        },
+      });
 
-  const getResponseBody = await getResponse.json();
-  const userData = getResponseBody.userData;
+      if (getResponse.status !== 200) {
+        setAccessToken(null);
+        return;
+      }
 
-  
-  return (
-    <>
-      <LoginTitle userName={userData.name} />
+      const getResponseBody = await getResponse.json();
+      const userData = getResponseBody.userData;
+      setUserData(userData);
+    })();
+  }, [accessToken, setAccessToken]);
 
-      {/* <Tickers accessToken={accessToken}/> */}
-      
-      <h3>You've successfully logged in!</h3>
-    </>
-  );
+  if (userData) {
+    return (
+      <>
+        <div style={{ display: 'flex', alignItems: 'flex-start', alignItems: 'center' }}>
+          <LoginTitle userName={userData.name} />
+
+          <button
+            onClick={() => {
+              setAccessToken(null);
+            }}
+            style={{ marginLeft: '15px' }}
+          >
+            Log Out
+          </button>
+        </div>
+
+        <Tickers accessToken={accessToken} />
+      </>
+    );
+  } else {
+    return <div>Loading user data...</div>;
+  }
 }
