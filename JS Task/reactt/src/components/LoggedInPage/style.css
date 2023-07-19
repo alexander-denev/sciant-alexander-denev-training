@@ -1,0 +1,11 @@
+.titleDiv {
+  display: grid;
+  grid-template-columns: max-content auto;
+}
+
+.logoutButton {
+  justify-self: right;
+  align-self: center;
+  height: max-content;
+  padding: 5px;
+}

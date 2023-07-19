@@ -1,20 +1,24 @@
-import React, { useRef } from 'react';
+import React, { useState } from 'react';
 import './style.css';
 
-export default function TickersTable({ changeTicker, children }) {
-  const symbol = useRef();
-  const name = useRef();
-  const price = useRef();
+export default function TickersTable({ tickerActions, fetchTickerData, children }) {
+  const [symbol, setSymbol] = useState('');
+  const [name, setName] = useState('');
+  const [price, setPrice] = useState('');
 
   return (
     <table>
       <thead>
         <tr>
-          <th></th>
+          <th>
+            <button style={{ visibility: 'hidden' }}>❌</button>
+          </th>
           <th>Symbol</th>
           <th>Name</th>
           <th>Price</th>
-          <th></th>
+          <th>
+            <button onClick={fetchTickerData}>🔁</button>
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -22,23 +26,26 @@ export default function TickersTable({ changeTicker, children }) {
         <tr>
           <td></td>
           <td>
-            <input type="text" ref={symbol}></input>
+            <input type="text" value={symbol} onChange={(event) => setSymbol(event.target.value)}></input>
           </td>
           <td>
-            <input type="text" ref={name}></input>
+            <input type="text" value={name} onChange={(event) => setName(event.target.value)}></input>
           </td>
           <td>
-            <input type="number" ref={price}></input>
+            <input type="number" value={price} onChange={(event) => setPrice(event.target.value)}></input>
           </td>
           <td>
             <button
-              onClick={() =>
-                changeTicker.add({
-                  symbol: symbol.current.value,
-                  name: name.current.value,
-                  price: price.current.value,
-                })
-              }
+              onClick={() => {
+                setSymbol('');
+                setName('');
+                setPrice('');
+                tickerActions.add({
+                  symbol: symbol,
+                  name: name,
+                  price: Number(price),
+                });
+              }}
             >
               ➕
             </button>

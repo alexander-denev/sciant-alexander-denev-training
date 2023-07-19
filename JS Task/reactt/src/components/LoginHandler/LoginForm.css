@@ -1,0 +1,33 @@
+#root {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+}
+
+.wrapDiv {
+  background: rgb(255, 240, 222);
+  border-radius: 30px;
+  padding: 20px;
+  border: 1px solid black;
+}
+
+.loginForm {
+  display: grid;
+  grid-template-columns: max-content max-content;
+  row-gap: 5px;
+  column-gap: 5px;
+}
+
+.loginTitle {
+  grid-column-start: 1;
+  grid-column-end: 3;
+  justify-self: center;
+}
+
+.submit {
+  grid-column-start: 1;
+  grid-column-end: 3;
+  width: max-content;
+  justify-self: right;
+}

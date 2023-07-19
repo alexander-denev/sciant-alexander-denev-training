@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import LoginTitle from './LoginTitle';
 import Tickers from './Tickers';
+import './style.css';
 
 export default function LoggedInPage({ accessToken, setAccessToken }) {
   const [userData, setUserData] = useState();
@@ -29,22 +30,22 @@ export default function LoggedInPage({ accessToken, setAccessToken }) {
 
   if (userData) {
     return (
-      <>
-        <div style={{ display: 'flex', alignItems: 'flex-start', alignItems: 'center' }}>
+      <div className='wrapDiv'>
+        <div className='titleDiv'>
           <LoginTitle userName={userData.name} />
 
           <button
             onClick={() => {
               setAccessToken(null);
             }}
-            style={{ marginLeft: '15px' }}
+            className='logoutButton'
           >
             Log Out
           </button>
         </div>
 
         <Tickers accessToken={accessToken} />
-      </>
+      </div>
     );
   } else {
     return <div>Loading user data...</div>;

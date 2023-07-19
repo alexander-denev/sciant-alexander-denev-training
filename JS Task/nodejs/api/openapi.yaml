@@ -267,7 +267,7 @@ paths:
                         price: 12.86
 
   /ticker/{tickerId}:
-    patch:
+    put:
       description: Update a user's ticker.
       tags:
         - ticker
@@ -283,6 +283,30 @@ paths:
           examples:
             default:
               value: 1
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - symbol
+                - name
+                - price
+              properties:
+                symbol:
+                  type: string
+                name:
+                  type: string
+                price:
+                  type: number
+            examples:
+              default:
+                value:
+                  symbol: GOOLG
+                  name: Google Inc. Updated 2023
+                  price: 240.78
 
       responses:
         '200':

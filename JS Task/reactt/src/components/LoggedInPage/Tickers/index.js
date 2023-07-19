@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { v4 as uuid } from 'uuid';
 import Ticker from './Ticker';
 import TickerTable from './TickersTable';
 
@@ -25,6 +26,7 @@ export default function Tickers({ accessToken }) {
         },
       });
       const result = (await getResponse.json()).result;
+
       setTickerData(result);
     } catch (error) {
       console.log(error);
@@ -43,11 +45,13 @@ export default function Tickers({ accessToken }) {
     };
   }, [fetchTickerData]);
 
-  const changeTicker = {
+  const tickerActions = {
     add: async (tickerData) => {
       try {
         setTickerData((current) => {
-          return [...current, (tickerData = { ...tickerData, id: current[current.length - 1].id + 1 })];
+          let tempTickerData = {...tickerData};
+          tempTickerData.id = uuid();
+          return [...current, tempTickerData];
         });
 
         await fetch(process.env.REACT_APP_RESTAPI_HOST + '/ticker', {
@@ -57,7 +61,7 @@ export default function Tickers({ accessToken }) {
             'Content-Type': 'application/json',
             Authorization: 'Bearer ' + accessToken,
           },
-          body: JSON.stringify({ ...tickerData, price: Number(tickerData.price) }),
+          body: JSON.stringify(tickerData),
         });
       } catch (error) {
         console.log(error);
@@ -65,6 +69,7 @@ export default function Tickers({ accessToken }) {
         fetchTickerData();
       }
     },
+
     delete: async (tickerId) => {
       try {
         setTickerData((current) => {
@@ -84,13 +89,37 @@ export default function Tickers({ accessToken }) {
         fetchTickerData();
       }
     },
+
+    update: async (tickerData) => {
+      const { id, ...putData } = tickerData;
+
+      try {
+        setTickerData((current) => {
+          return current.map((obj) => (obj.id === id ? { ...putData, id: obj.id } : obj));
+        });
+
+        await fetch(process.env.REACT_APP_RESTAPI_HOST + '/ticker/' + id, {
+          method: 'PUT',
+          headers: {
+            accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + accessToken,
+          },
+          body: JSON.stringify({ ...putData, price: Number(putData.price) }),
+        });
+      } catch (error) {
+        console.log(error);
+      } finally {
+        fetchTickerData();
+      }
+    },
   };
 
   if (tickerData) {
     return (
-      <TickerTable changeTicker={changeTicker}>
+      <TickerTable tickerActions={tickerActions} fetchTickerData={fetchTickerData}>
         {tickerData.map((row) => {
-          return <Ticker row={row} changeTicker={changeTicker} key={'ticker_' + row.id} />;
+          return <Ticker row={row} tickerActions={tickerActions} key={'ticker_' + row.id} />;
         })}
       </TickerTable>
     );

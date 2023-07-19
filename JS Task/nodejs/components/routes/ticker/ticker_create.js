@@ -16,6 +16,7 @@ router.post('/', async (req, res) => {
       price,
     ]);
     await client.query('INSERT INTO user_tickers (user_id, ticker_id) VALUES ($1, $2)', [userId, tickerId]);
+
     await client.query('COMMIT');
 
     res.sendStatus(200);

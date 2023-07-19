@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import './LoginForm.css';
 
 export default function LoginForm({ setAccessToken }) {
   const [invalidCredentials, setInvalidCredentials] = useState(() => false);
 
-  const [email, setEmail] = useState(() => ''); 
-  const [password, setPassword] = useState(() => ''); 
+  const [email, setEmail] = useState(() => '');
+  const [password, setPassword] = useState(() => '');
 
   useEffect(() => {
     setInvalidCredentials(false);
@@ -45,23 +46,21 @@ export default function LoginForm({ setAccessToken }) {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label>
-        Email
-        <input type="text" value={email} onChange={(event) => setEmail(event.target.value)}></input>
-      </label>
-      <br />
+    <>
+      <div className="wrapDiv">
+        <form className="loginForm" onSubmit={handleSubmit}>
+          <h1 className="loginTitle">Login</h1>
+          <label>Email</label>
+          <input type="text" value={email} onChange={(event) => setEmail(event.target.value)}></input>
 
-      <label>
-        Password
-        <input type="password" value={password} onChange={(event) => setPassword(event.target.value)}></input>
-      </label>
-      <br />
+          <label>Password</label>
+          <input type="password" value={password} onChange={(event) => setPassword(event.target.value)}></input>
 
-      <input type="submit" value="Login" />
-      <br />
+          <input className="submit" type="submit" value="Login" />
 
-      {invalidCredentials ? <div>Invalid Credentials!</div> : null}
-    </form>
+          {invalidCredentials ? <div>Invalid Credentials!</div> : null}
+        </form>
+      </div>
+    </>
   );
 }
