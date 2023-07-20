@@ -1,0 +1,14 @@
+{
+  "table": "instrument",
+  "action": "update",
+  "data": [
+    {
+      "symbol": "XBTUSD",
+      "lastPriceProtected": 30253.5,
+      "openValue": 666219529500,
+      "fairPrice": 30268.14,
+      "markPrice": 30268.14,
+      "timestamp": "2023-07-20T11:04:05.757Z"
+    }
+  ]
+}
