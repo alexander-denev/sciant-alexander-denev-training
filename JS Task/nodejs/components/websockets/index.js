@@ -1,16 +1,16 @@
 const WebSocket = require('ws');
 
-const ws = new WebSocket('wss://www.bitmex.com/realtime?subscribe=instrument:XBTUSD,instrument:ETHUSD,instrument:LTCUSD');
+const websocket = new WebSocket('wss://www.bitmex.com/realtime?subscribe=instrument:XBTUSD,instrument:ETHUSD,instrument:LTCUSD');
 
-// ws.on('open', function open() {
-//   ws.send('ping');
-// });
-
-ws.on('message', function incoming(data) {
-  console.log(data.toString());
-  // console.log(JSON.parse(data.toString()));
+websocket.on('open', function open() {
+  console.log('Connected');
 });
 
-ws.on('error', function error(err) {
+websocket.on('message', function incoming(data) {
+  const parsedData = JSON.parse(data.toString());
+  console.log(parsedData);
+});
+
+websocket.on('error', function error(err) {
   console.error('WebSocket encountered error: ', err);
 });
