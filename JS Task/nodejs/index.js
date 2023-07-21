@@ -14,8 +14,12 @@ const pool = new Pool({
 });
 
 // Define constants
+const http = require('http');
 const express = require('express');
+const cors = require('cors');
+
 const app = express();
+const server = http.createServer(app);
 const port = env.RESTAPI_PORT || 5555;
 
 // Import component dependencies
@@ -30,7 +34,6 @@ app.use((req, res, next) => {
 // Middleware
 app.use(express.json());
 app.use(express.text());
-const cors = require('cors');
 app.use(cors({ origin: '*' }));
 
 // Api documentation and validator
@@ -39,6 +42,10 @@ app.use(require('./api'));
 // Routes
 app.use(require('./components/routes'));
 
-app.listen(port, () => {
+// Websockets
+require('./components/websockets')(server, myJwt, pool);
+
+// Start server
+server.listen(port, () => {
   console.log('Node listening on port ' + port);
 });

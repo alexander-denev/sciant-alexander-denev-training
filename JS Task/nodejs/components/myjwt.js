@@ -22,6 +22,15 @@ class Main {
       next();
     });
   }
+
+  verifyToken(token) {
+    let result;
+    jwt.verify(token, this.secret, (err, object) => {
+      if (err) result = false;
+      else result = object;
+    });
+    return result;
+  }
 }
 
 module.exports = Main;

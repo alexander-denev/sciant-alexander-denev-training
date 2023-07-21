@@ -8,13 +8,14 @@ INSERT INTO users (email, hash, userdata) VALUES ('admin', '$argon2id$v=19$m=655
 
 CREATE TABLE IF NOT EXISTS tickers (
 id SERIAL PRIMARY KEY,
-symbol VARCHAR(255),
+symbol VARCHAR(255) UNIQUE,
 name VARCHAR(255)
 );
 
 CREATE TABLE IF NOT EXISTS user_tickers (
     user_id INT REFERENCES users(id),
     ticker_id INT REFERENCES tickers(id)
+    UNIQUE(user_id, ticker_id)
 );
 
 CREATE TABLE IF NOT EXISTS ticker_data (
@@ -22,3 +23,10 @@ CREATE TABLE IF NOT EXISTS ticker_data (
     at BIGINT,
     price NUMERIC
 );
+
+
+
+
+
+INSERT INTO tickers (symbol) VALUES ('ETHUSD');
+INSERT INTO user_tickers (user_id, ticker_id) VALUES (1, 1);

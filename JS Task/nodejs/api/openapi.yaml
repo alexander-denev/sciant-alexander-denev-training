@@ -165,7 +165,7 @@ paths:
 
   /ticker:
     post:
-      description: Create a new ticker, belonging to the user.
+      description: Link a ticker to the user
       tags:
         - ticker
 
@@ -176,22 +176,14 @@ paths:
             schema:
               type: object
               required:
-                - symbol
-                - name
-                - price
+                - tickerId
               properties:
-                symbol:
-                  type: string
-                name:
-                  type: string
-                price:
-                  type: number
+                tickerId:
+                  type: integer
             examples:
               default:
                 value:
-                  symbol: GOOG
-                  name: Google Inc.
-                  price: 117.21
+                  tickerId: 1
 
       responses:
         '401':
@@ -304,7 +296,7 @@ paths:
             examples:
               default:
                 value:
-                  symbol: GOOLG
+                  symbol: GOOG
                   name: Google Inc. Updated 2023
                   price: 240.78
 
