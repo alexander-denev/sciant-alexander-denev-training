@@ -20,7 +20,8 @@ router.post('/', async (req, res) => {
       res.sendStatus(200);
     }
   } catch (error) {
-    res.status(500).json({ error: error });
+    console.log(error.stack);
+    res.sendStatus(500);
   }
 });
 

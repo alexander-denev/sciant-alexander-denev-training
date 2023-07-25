@@ -3,7 +3,7 @@ const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, './.env_debug') });
 
 // Create postgres connection
-const { Pool } = require('pg');
+const { Pool, types:pgTypes } = require('pg');
 const env = process.env;
 const pool = new Pool({
   user: env.POSTGRES_USER || 'root',
@@ -12,6 +12,7 @@ const pool = new Pool({
   port: env.POSTGRES_PORT || 5432,
   database: env.POSTGRES_DB || 'baza',
 });
+pgTypes.setTypeParser(pgTypes.builtins.NUMERIC, parseFloat);
 
 // Define constants
 const http = require('http');
@@ -43,7 +44,7 @@ app.use(require('./api'));
 app.use(require('./components/routes'));
 
 // Websockets
-// require('./components/websockets')(server, myJwt, pool);
+require('./components/websockets')(server, myJwt, pool);
 
 // Start server
 server.listen(port, () => {

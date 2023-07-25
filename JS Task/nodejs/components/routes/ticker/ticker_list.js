@@ -6,35 +6,29 @@ router.get('/', async (req, res) => {
   const offset = req.body.offset || 0;
 
   try {
-    const resultTickers = (
-      await req.pool.query(`SELECT * FROM tickers ORDER BY id ASC OFFSET $1 LIMIT $2`, [offset, limit])
-    ).rows;
-
-    const resultTickerPrices = (
+    const result = (
       await req.pool.query(
         `
-          SELECT ticker_id, price
-          FROM ticker_data
-          WHERE at IN (
-              SELECT max(at)
-              FROM ticker_data
-              WHERE ticker_id = ANY($1::integer[])
-              GROUP BY ticker_id
-          ) AND ticker_id = ANY($1::integer[])
-          ORDER BY ticker_id
+          SELECT td.ticker_id AS id, t.symbol, td.price
+          FROM ticker_data td
+          INNER JOIN tickers t ON td.ticker_id = t.id
+          AND at IN (
+            SELECT max(at)
+            FROM ticker_data
+            GROUP BY ticker_id)
+          ORDER BY td.ticker_id ASC
+          LIMIT $1
+          OFFSET $2
         `,
-        [tickerIds]
+        [limit, offset]
       )
     ).rows;
 
-    var resultFinal = resultTickers.map((obj, i) => {
-      obj.price = Number(resultTickerPrices[i].price);
-      return obj;
-    });
-
-    res.status(200).json({ result: resultFinal });
+    res.status(200).json({ result });
   } catch (error) {
-    res.status(500).json({ error: error });
+    console.log(error);
+    console.log(error.stack);
+    res.sendStatus(500);
   }
 });
 

@@ -23,17 +23,17 @@ components:
 
     '500':
       description: Internal server error.
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-          examples:
-            default:
-              value:
-                error: Couldn't access database.
+      # content:
+      #   application/json:
+      #     schema:
+      #       type: object
+      #       properties:
+      #         error:
+      #           type: string
+      #     examples:
+      #       default:
+      #         value:
+      #           error: Couldn't access database.
 
     '409user':
       description: Conflict. User already exists.
@@ -213,8 +213,6 @@ paths:
                           type: integer
                         symbol:
                           type: string
-                        name:
-                          type: string
                         price:
                           type: number
 
@@ -224,11 +222,9 @@ paths:
                     result:
                       - id: 1
                         symbol: GOOG
-                        name: Google Inc.
                         price: 117.21
                       - id: 2
                         symbol: APPL
-                        name: Apple Inc.
                         price: 12.86
 
   /ticker:
@@ -279,8 +275,6 @@ paths:
                           type: integer
                         symbol:
                           type: string
-                        name:
-                          type: string
                         price:
                           type: number
 
@@ -290,11 +284,9 @@ paths:
                     result:
                       - id: 1
                         symbol: GOOG
-                        name: Google Inc.
                         price: 117.21
                       - id: 2
                         symbol: APPL
-                        name: Apple Inc.
                         price: 12.86
 
   /ticker/{tickerId}:
@@ -322,10 +314,8 @@ paths:
           $ref: '#/components/responses/200'
         '409':
           description: Conflict. Ticker already linked to user.
-        '500':
-          $ref: "#/components/responses/500"
         '404':
-        description: Ticker not found to be linked to user.
+          description: Ticker not found.
 
     delete:
       description: Delete a user's ticker.
