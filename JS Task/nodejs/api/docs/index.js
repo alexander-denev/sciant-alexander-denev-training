@@ -9,9 +9,6 @@ const specs = yaml.load(path.resolve(__dirname, '../openapi.yaml'));
 const express = require('express');
 const router = express.Router();
 
-router.use(
-  swaggerUi.serve,
-  swaggerUi.setup(specs)
-);
+router.use(swaggerUi.serve, swaggerUi.setup(specs));
 
 module.exports = router;

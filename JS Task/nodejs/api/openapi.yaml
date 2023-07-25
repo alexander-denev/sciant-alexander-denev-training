@@ -50,6 +50,7 @@ paths:
       description: Check credentials and return a JWT.
       tags:
         - login
+        - user
 
       security: []
 
@@ -163,38 +164,76 @@ paths:
                       age: confidential
                       address: confidential
 
-  /ticker:
-    post:
-      description: Link a ticker to the user
+  /user/ticker:
+    get:
+      description: List tickers linked to user. Their latest price is included.
       tags:
         - ticker
+        - user
 
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - tickerId
-              properties:
-                tickerId:
-                  type: integer
-            examples:
-              default:
-                value:
-                  tickerId: 1
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          examples:
+            default:
+              value: 100
+          description: Limit the array size returned. Default is 100.
+        - in: query
+          name: offset
+          schema:
+            type: integer
+          examples:
+            default:
+              value: 0
+          description: When to start counting towards the limit and returning values.
 
       responses:
         '401':
           $ref: '#/components/responses/unauth'
-        '200':
-          $ref: '#/components/responses/200'
+
         '500':
           $ref: '#/components/responses/500'
 
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: array
+                    description: An array of the tickers linked to the user
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        symbol:
+                          type: string
+                        name:
+                          type: string
+                        price:
+                          type: number
+
+              examples:
+                default:
+                  value:
+                    result:
+                      - id: 1
+                        symbol: GOOG
+                        name: Google Inc.
+                        price: 117.21
+                      - id: 2
+                        symbol: APPL
+                        name: Apple Inc.
+                        price: 12.86
+
+  /ticker:
     get:
-      description: List user's tickers.
+      description: List all tickers. Their latest price is included.
       tags:
         - ticker
 
@@ -232,7 +271,7 @@ paths:
                 properties:
                   result:
                     type: array
-                    description: An array of the user's tickers.
+                    description: An array of the tickers
                     items:
                       type: object
                       properties:
@@ -259,15 +298,15 @@ paths:
                         price: 12.86
 
   /ticker/{tickerId}:
-    put:
-      description: Update a user's ticker.
+    post:
+      description: Link a ticker to the user
       tags:
         - ticker
 
       parameters:
         - name: tickerId
           in: path
-          description: The id of a ticker that the user owns.
+          description: The id of a ticker to link to user.
           required: true
           schema:
             type: integer
@@ -276,39 +315,17 @@ paths:
             default:
               value: 1
 
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - symbol
-                - name
-                - price
-              properties:
-                symbol:
-                  type: string
-                name:
-                  type: string
-                price:
-                  type: number
-            examples:
-              default:
-                value:
-                  symbol: GOOG
-                  name: Google Inc. Updated 2023
-                  price: 240.78
-
       responses:
-        '200':
-          $ref: '#/components/responses/200'
-        '500':
-          $ref: '#/components/responses/500'
-        '403':
-          $ref: '#/components/responses/403'
         '401':
           $ref: '#/components/responses/unauth'
+        '200':
+          $ref: '#/components/responses/200'
+        '409':
+          description: Conflict. Ticker already linked to user.
+        '500':
+          $ref: "#/components/responses/500"
+        '404':
+        description: Ticker not found to be linked to user.
 
     delete:
       description: Delete a user's ticker.
@@ -332,7 +349,7 @@ paths:
           $ref: '#/components/responses/200'
         '500':
           $ref: '#/components/responses/500'
-        '403':
-          $ref: '#/components/responses/403'
+        '404':
+          description: Ticker not found to be linked to user.
         '401':
           $ref: '#/components/responses/unauth'

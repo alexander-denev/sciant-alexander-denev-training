@@ -43,7 +43,7 @@ app.use(require('./api'));
 app.use(require('./components/routes'));
 
 // Websockets
-require('./components/websockets')(server, myJwt, pool);
+// require('./components/websockets')(server, myJwt, pool);
 
 // Start server
 server.listen(port, () => {

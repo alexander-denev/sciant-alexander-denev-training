@@ -14,7 +14,7 @@ name VARCHAR(255)
 
 CREATE TABLE IF NOT EXISTS user_tickers (
     user_id INT REFERENCES users(id),
-    ticker_id INT REFERENCES tickers(id)
+    ticker_id INT REFERENCES tickers(id),
     UNIQUE(user_id, ticker_id)
 );
 
