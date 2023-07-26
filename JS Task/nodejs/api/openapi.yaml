@@ -164,69 +164,6 @@ paths:
                       age: confidential
                       address: confidential
 
-  /user/ticker:
-    get:
-      description: List tickers linked to user. Their latest price is included.
-      tags:
-        - ticker
-        - user
-
-      parameters:
-        - in: query
-          name: limit
-          schema:
-            type: integer
-          examples:
-            default:
-              value: 100
-          description: Limit the array size returned. Default is 100.
-        - in: query
-          name: offset
-          schema:
-            type: integer
-          examples:
-            default:
-              value: 0
-          description: When to start counting towards the limit and returning values.
-
-      responses:
-        '401':
-          $ref: '#/components/responses/unauth'
-
-        '500':
-          $ref: '#/components/responses/500'
-
-        '200':
-          description: Success.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  result:
-                    type: array
-                    description: An array of the tickers linked to the user
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          type: integer
-                        symbol:
-                          type: string
-                        price:
-                          type: number
-
-              examples:
-                default:
-                  value:
-                    result:
-                      - id: 1
-                        symbol: GOOG
-                        price: 117.21
-                      - id: 2
-                        symbol: APPL
-                        price: 12.86
-
   /ticker:
     get:
       description: List all tickers. Their latest price is included.
@@ -289,7 +226,69 @@ paths:
                         symbol: APPL
                         price: 12.86
 
-  /ticker/{tickerId}:
+  /user/ticker:
+    get:
+      description: List tickers linked to user. Their latest price is included.
+      tags:
+        - ticker
+
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          examples:
+            default:
+              value: 100
+          description: Limit the array size returned. Default is 100.
+        - in: query
+          name: offset
+          schema:
+            type: integer
+          examples:
+            default:
+              value: 0
+          description: When to start counting towards the limit and returning values.
+
+      responses:
+        '401':
+          $ref: '#/components/responses/unauth'
+
+        '500':
+          $ref: '#/components/responses/500'
+
+        '200':
+          description: Success.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: array
+                    description: An array of the tickers linked to the user
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        symbol:
+                          type: string
+                        price:
+                          type: number
+
+              examples:
+                default:
+                  value:
+                    result:
+                      - id: 1
+                        symbol: GOOG
+                        price: 117.21
+                      - id: 2
+                        symbol: APPL
+                        price: 12.86
+
+  /user/ticker/{tickerId}:
     post:
       description: Link a ticker to the user
       tags:

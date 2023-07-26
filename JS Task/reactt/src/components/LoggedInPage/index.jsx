@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import LoginTitle from './LoginTitle';
-import Tickers from './Tickers';
-import './style.css';
+import LoginTitle from './components/LoginTitle';
+import Tickers from './components/Tickers';
 
 export default function LoggedInPage({ accessToken, setAccessToken }) {
   const [userData, setUserData] = useState();
 
   useEffect(() => {
-    (async () => {
+    const getUsers = async () => {
       const getResponse = await fetch(process.env.REACT_APP_RESTAPI_HOST + '/user', {
         method: 'GET',
         headers: {
@@ -25,7 +24,8 @@ export default function LoggedInPage({ accessToken, setAccessToken }) {
       const getResponseBody = await getResponse.json();
       const userData = getResponseBody.userData;
       setUserData(userData);
-    })();
+    };
+    getUsers();
   }, [accessToken, setAccessToken]);
 
   if (userData) {

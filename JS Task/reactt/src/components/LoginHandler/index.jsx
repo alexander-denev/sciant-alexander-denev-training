@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import LoggedInPage from '../LoggedInPage';
-import LoginForm from './LoginForm';
+import LoginForm from './components/LoginForm';
 
 export default function LoginHandler() {
   const [accessToken, setAccessToken] = useState(() => JSON.parse(sessionStorage.getItem('accessToken')));

@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
+const pool = require('../pool');
+
 const argon2 = require('argon2');
 
 router.post('/', async (req, res) => {
@@ -9,7 +11,7 @@ router.post('/', async (req, res) => {
   // Imported
   try {
     // Success running code
-    const queryResult = await req.pool.query('SELECT id, hash FROM users WHERE email = $1', [email]);
+    const queryResult = await pool.query('SELECT id, hash FROM users WHERE email = $1', [email]);
 
     if (queryResult.rows[0]) {
       // User was found on the database

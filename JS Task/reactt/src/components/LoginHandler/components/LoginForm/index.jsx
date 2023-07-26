@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import './LoginForm.css';
+import fetchLogin from './fetchLogin'
 
 export default function LoginForm({ setAccessToken }) {
   const [invalidCredentials, setInvalidCredentials] = useState(() => false);
@@ -15,17 +15,7 @@ export default function LoginForm({ setAccessToken }) {
     event.preventDefault();
 
     try {
-      const loginResponse = await fetch(process.env.REACT_APP_RESTAPI_HOST + '/login', {
-        method: 'POST',
-        headers: {
-          accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: email,
-          password: password,
-        }),
-      });
+      const loginResponse = await fetchLogin(email, password);
 
       const loginSatusCode = loginResponse.status;
 

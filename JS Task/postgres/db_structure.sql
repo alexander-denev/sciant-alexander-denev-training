@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS users (
     hash VARCHAR(255),
     userdata JSON
 );
-INSERT INTO users (email, hash, userdata) VALUES ('admin', '$argon2id$v=19$m=65536,t=3,p=4$8Q+v1SN2EJGKuI8+pLp9gw$nPPmKx+mYlR9ljP6TPq+C1/TBTGOIOg8yqhWk4LwhnM', '{ "name":"Mr. Admin", "age":"Infinite" }');
+INSERT INTO users (email, hash, userdata) VALUES ('admin', '$argon2id$v=19$m=65536,t=3,p=4$wFjyLoltSVrHXNG7jyzWkQ$2BaoysGWItu4G9F+JCES0BOBLjJbcYa6xtwvZ6Zesxs', '{ "name":"Mr. Admin", "age":"Infinite" }');
 
 CREATE TABLE IF NOT EXISTS tickers (
     id SERIAL PRIMARY KEY,
@@ -24,17 +24,3 @@ CREATE TABLE IF NOT EXISTS ticker_data (
     at BIGINT,
     price NUMERIC
 );
-
-
-
-
-
-INSERT INTO tickers (symbol) VALUES ('ETHUSD');
-INSERT INTO user_tickers (user_id, ticker_id) VALUES (1, 1);
-INSERT INTO ticker_data (ticker_id, at, price) VALUES (1, 1690272692, 149.33);
-INSERT INTO ticker_data (ticker_id, at, price) VALUES (1, 1690272700, 144.80);
-
-INSERT INTO tickers (symbol) VALUES ('BTCUSD');
-INSERT INTO user_tickers (user_id, ticker_id) VALUES (1, 2);
-INSERT INTO ticker_data (ticker_id, at, price) VALUES (2, 1690272697, 561.84);
-INSERT INTO ticker_data (ticker_id, at, price) VALUES (2, 1690273696, 700.21);

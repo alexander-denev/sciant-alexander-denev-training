@@ -1,12 +1,52 @@
 const WebSocket = require('ws');
 const socketIo = require('socket.io');
 
-module.exports = (server, myJwt, pool) => {
-  // WebSocket
-  const ws = new WebSocket('wss://www.bitmex.com/realtime?subscribe=instrument:XBTUSD,instrument:ETHUSD,instrument:LTCUSD');
+const pool = require('../pool');
 
-  ws.on('open', () => {
+module.exports = (server, myJwt) => {
+  // Define instruments to subscribe to
+  const subscribedInstruments = ['XBTUSD', 'ETHUSD', 'LTCUSD'];
+
+  // WebSocket
+  const ws = new WebSocket(
+    `wss://www.bitmex.com/realtime?subscribe=${subscribedInstruments
+      .map((instr) => {
+        return `instrument:${instr}`;
+      })
+      .join(',')}`
+  );
+
+  ws.on('open', async () => {
     console.log('WebSocket: Connected to Bitmex');
+
+    // Create ticker if it doesn't exist
+    for (let instr of subscribedInstruments) {
+      try {
+        const tickerResultRows = (
+          await pool.query(
+            `
+              SELECT id
+              FROM tickers
+              WHERE symbol = $1
+            `,
+            [instr]
+          )
+        ).rows;
+
+        if (!tickerResultRows.length) {
+          await pool.query(
+            `
+            INSERT INTO tickers
+            (symbol)
+            VALUES ($1)
+          `,
+            [instr]
+          );
+        }
+      } catch (err) {
+        console.log(err.stack);
+      }
+    }
   });
 
   ws.on('error', (err) => {
@@ -27,36 +67,18 @@ module.exports = (server, myJwt, pool) => {
     try {
       await pool.query(
         `
-        DO
-        $do$
-
-        DECLARE
-          getTickerId INTEGER;
-
-        BEGIN
-          getTickerId := (
-            SELECT id 
-            FROM tickers 
-            WHERE symbol = $1
-          );
-    
-          IF getTickerId IS NULL THEN
-            INSERT INTO tickers
-            (symbol)
-            VALUES ($1)
-            RETURNING id INTO getTickerId;
-          END IF;
-    
           INSERT INTO ticker_data
           (ticker_id, at, price)
           VALUES (
-            getTickerId,
+            (
+              SELECT id
+              FROM tickers
+              WHERE symbol = $1
+            ),
             $2,
             $3
-          );
-        END
-        $do$
-      `,
+          )
+        `,
         [
           data.symbol,
           Math.floor(Date.now() / 1000), // convert current timestamp to seconds
@@ -64,7 +86,7 @@ module.exports = (server, myJwt, pool) => {
         ]
       );
     } catch (err) {
-      console.log(err.stack);
+      console.log(err);
     }
   });
 
