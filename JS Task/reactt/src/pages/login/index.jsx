@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import fetchLogin from './fetchLogin'
+import fetchLogin from './fetchLogin';
 
-export default function LoginForm({ setAccessToken }) {
+export default function Login({ setAccessToken }) {
   const [invalidCredentials, setInvalidCredentials] = useState(() => false);
 
   const [email, setEmail] = useState(() => '');

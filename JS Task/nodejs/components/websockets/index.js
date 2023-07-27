@@ -91,14 +91,19 @@ module.exports = (server, myJwt) => {
   });
 
   // Socket io
-  const io = socketIo(server);
+  const io = socketIo(server, {
+    cors: {
+      origin: '*',
+    },
+  });
 
   // Authentication
   io.use((socket, next) => {
-    const accessToken = socket.handshake.headers.authorization.split(' ')[1];
-    if (!accessToken) {
+    const authorization = socket.handshake.headers.authorization;
+    if (!authorization) {
       return next(new Error('No access token'));
     }
+    const accessToken = authorization.split(' ')[1];
 
     const myJwtResult = myJwt.verifyToken(accessToken);
     if (!myJwtResult) {

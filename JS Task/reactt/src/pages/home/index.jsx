@@ -30,15 +30,15 @@ export default function LoggedInPage({ accessToken, setAccessToken }) {
 
   if (userData) {
     return (
-      <div className='wrapDiv'>
-        <div className='titleDiv'>
+      <div className="wrapDiv">
+        <div className="titleDiv">
           <LoginTitle userName={userData.name} />
 
           <button
             onClick={() => {
               setAccessToken(null);
             }}
-            className='logoutButton'
+            className="logoutButton"
           >
             Log Out
           </button>

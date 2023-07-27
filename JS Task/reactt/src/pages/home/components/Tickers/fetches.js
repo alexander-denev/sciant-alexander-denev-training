@@ -59,7 +59,7 @@ export default class Main {
 
   async POST_userTicker(tickerId, headers) {
     try {
-      const result = await fetch(process.env.REACT_APP_RESTAPI_HOST + '/ticker/' + tickerId, {
+      const result = await fetch(process.env.REACT_APP_RESTAPI_HOST + '/user/ticker/' + tickerId, {
         method: 'POST',
         headers: {
           accept: 'application/json',
@@ -80,7 +80,7 @@ export default class Main {
 
   async DELETE_userTicker(tickerId, headers) {
     try {
-      const result = await fetch(process.env.REACT_APP_RESTAPI_HOST + '/ticker/' + tickerId, {
+      const result = await fetch(process.env.REACT_APP_RESTAPI_HOST + '/user/ticker/' + tickerId, {
         method: 'DELETE',
         headers: {
           accept: 'application/json',
