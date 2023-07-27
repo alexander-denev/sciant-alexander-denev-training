@@ -1,4 +1,3 @@
 .vscode/
 node_modules/
 .env_debug
-**/reactt/.env
