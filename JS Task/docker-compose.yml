@@ -1,14 +1,13 @@
 version: '2'
 services:
-
   postgres:
     build:
       context: ./postgres
       dockerfile: Dockerfile
-    ports:
-      - 5432:5432
+    # ports:
+    #   - 5432:5432
     env_file:
-    - .env
+      - .env
 
   nodejs:
     build:
@@ -18,9 +17,9 @@ services:
       - 5555:5555
     env_file:
       - .env
-    depends_on: 
+    depends_on:
       postgres:
-        condition: service_completed_successfully
+        condition: service_healthy
 
   react:
     build:
@@ -28,3 +27,6 @@ services:
       dockerfile: Dockerfile
     ports:
       - 80:80
+    depends_on:
+      postgres:
+        condition: service_healthy

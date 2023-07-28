@@ -24,6 +24,8 @@ export default function Tickers({ accessToken }) {
     const resultTicker = await myFetch.GET_ticker({ Authorization: 'Bearer ' + accessToken });
     const resultUserTicker = await myFetch.GET_userTicker({ Authorization: 'Bearer ' + accessToken });
 
+    if (!resultTicker || !resultUserTicker) return;
+
     const finalResult = resultTicker.filter((ticker) => {
       return !resultUserTicker.some((userTicker) => ticker.id === userTicker.id);
     });
@@ -58,6 +60,10 @@ export default function Tickers({ accessToken }) {
     };
   }, [accessToken, getData, linking, getUnlinkedTickers]);
 
+  useEffect(() => {
+    setData([]);
+  }, [linking]);
+
   async function link(tickerId) {
     const result = await myFetch.POST_userTicker(tickerId, { Authorization: 'Bearer ' + accessToken });
     if (result) {
@@ -84,7 +90,7 @@ export default function Tickers({ accessToken }) {
             setLinking((current) => !current);
           }}
         >
-          {linking ? '🔙' : '➕'}
+          {linking ? '⬅' : '➕'}
         </button>
       }
     >
@@ -92,21 +98,7 @@ export default function Tickers({ accessToken }) {
         return (
           <Ticker
             row={row}
-            deleteButton={
-              linking ? null : (
-                <button
-                  onClick={() => {
-                    setData((current) => {
-                      return current.filter((currentRow) => currentRow.id !== row.id);
-                    });
-                    unlink(row.id);
-                  }}
-                >
-                  ❌
-                </button>
-              )
-            }
-            addButton={
+            button={
               linking ? (
                 <button
                   onClick={() => {
@@ -118,7 +110,18 @@ export default function Tickers({ accessToken }) {
                 >
                   ➕
                 </button>
-              ) : null
+              ) : (
+                <button
+                  onClick={() => {
+                    setData((current) => {
+                      return current.filter((currentRow) => currentRow.id !== row.id);
+                    });
+                    unlink(row.id);
+                  }}
+                >
+                  ❌
+                </button>
+              )
             }
             key={'ticker_' + row.id}
           />

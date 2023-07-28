@@ -45,33 +45,26 @@
 }
 
 /* Table */
-table {
-  border-collapse: collapse;
-  width: 100%;
+.ticker_table {
+  /* background-color: #73d5e8;
+  background-color: #8cc9f8; */
+  box-sizing: border-box;
+  text-align: center;
 }
-
-table,
-th,
-td {
-  border: 1px solid black;
-  color: black;
+.ticker_table_row,
+.ticker_table_header {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr) max-content;
 }
-
-th,
-th button {
-  background-color: #73d5e8;
+.ticker_table_header {
+  font-weight: bold;
+  font-size: large;
 }
-
-td,
-td button {
-  background-color: #8cc9f8;
+.ticker_table_row .symbol,
+.ticker_table_row .price {
+  border-top: 1px solid black;
+  border-left: 1px solid black;
 }
-
-table tr td:first-child,
-table tr td:last-child {
-  width: 0px;
-}
-table tr th:first-child,
-table tr th:last-child {
-  width: max-content;
+.ticker_table_endRow {
+  justify-content: right;
 }
